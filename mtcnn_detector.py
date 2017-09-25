@@ -534,7 +534,7 @@ class MtcnnDetector(object):
         
 
 
-    def extract_image_chips_angle_limit(self, img, points, desired_size=256, padding=0, angle_limit = 0.1, HV_ratio = 1):
+    def extract_image_chips_angle_limit(self, img, points, desired_size=256, padding=0, angle_limit = 0.1, HV_ratio = 1.5):
         """
             crop and align face
         Parameters:
@@ -550,6 +550,7 @@ class MtcnnDetector(object):
                 cropped and aligned faces 
         """
         crop_imgs = []
+        crop_big_angle_imgs =[]
         for p in points:
             shape  =[]
             for k in range(len(p)/2):
@@ -604,10 +605,17 @@ class MtcnnDetector(object):
             avg_y = (shape[1]+shape[3]+shape[7]+shape[9])/4
             x_min = avg_x - abs(shape[0]-shape[2]) * angle_limit
             x_max = avg_x + abs(shape[0]-shape[2]) * angle_limit
-            y_min = avg_y - abs(shape[1]-shape[7]) * angle_limit * HV_ratio
+            y_min = avg_y - abs(shape[1]-shape[7]) * 1.07 * angle_limit * HV_ratio
             y_max = avg_y + abs(shape[1]-shape[7]) * angle_limit * HV_ratio
-            if  ((x_min < shape[4]) and (x_max > shape[4]) and (y_min < shape[5]) and (y_max > shape[5])):
-                crop_imgs.append(chips)
 
-        return crop_imgs
+            if  ((x_min < shape[4]) and (x_max > shape[4]) and (y_min < shape[5]) and (y_max > shape[5])):
+                #print "ok"
+                crop_imgs.append(chips)
+            '''
+            else:
+                #print "big_angle"
+                crop_big_angle_imgs.append(chips)
+            '''
+
+        return crop_imgs, crop_big_angle_imgs
         
